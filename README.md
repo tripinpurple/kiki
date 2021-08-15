@@ -1,4 +1,4 @@
-#####:candy:
+# :candy:
 as it goes "Bilo kuda, Ki-Ki svuda!"
 ## kontinuirana integracija <br> kontinuirana implementacija
 
