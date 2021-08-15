@@ -1,10 +1,12 @@
+#####:candy:
+as it goes "Bilo kuda, Ki-Ki svuda!"
 ## kontinuirana integracija <br> kontinuirana implementacija
 
-or kiki for short. as they say "Bilo kuda, Ki-Ki svuda!" :candy:
+or kiki for short
 
 ### Description:
 kiki is a CI/CD collection of tools, written in python<br>
-the main focus is to cut down on build and deploy time, by building only the files that have been modified as well as deploying the same ones.
+the main focus is to cut down on build and deploy time, by building only the files that have been modified as well as deploying the same ones
 
 ### Requirements:
 
