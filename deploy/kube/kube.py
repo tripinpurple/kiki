@@ -41,7 +41,7 @@ def patchService(name, body):
         name=name, namespace=namespace, body=body
     )
 
-    print("\n[INFO] deployment's container image updated.\n")
+    print("\n[INFO] '"+name+"' container image updated.\n")
     print("%s\t%s\t\t\t%s\t%s" % ("NAMESPACE", "NAME", "REVISION", "IMAGE"))
     print(
         "%s\t\t%s\t%s\t\t%s\n"
@@ -62,7 +62,7 @@ def patchConfig(name, body):
         name=name, namespace=namespace, body=body
     )
 
-    print("\n[INFO] configmap `test-configmap` patched\n")
+    print("\n[INFO] configmap '"+name+"' patched\n")
     print("NAME:\n%s\n" % configMapPatch.metadata.name)
     print("DATA:\n%s\n" % configMapPatch.data)
 
@@ -119,7 +119,7 @@ def multiDeployment(services):
             updateCronjob(filePath, serviceName)
 
         else:
-            print('Files no exist.')
+            print('Files do not exist.')
 
 
 def updateCronjob(cronjob, name):
