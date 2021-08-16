@@ -1,4 +1,2 @@
 kubernetes
-yaml
-json
 pathlib
