@@ -1,15 +1,52 @@
 import sys
 import yaml
-import pathlib
+import pathlib2
 from kubernetes import client, config
 
-# Usage: kube.py [app] [service/path service/path] [registry] [tag] [namespace]
+# Usage: kube.py [app] [service/path service/path] [registry] [tag] [namespace] [True/False] [folder]
 
 app = sys.argv[1]
 services = sys.argv[2]
 registry = sys.argv[3]
 tag = sys.argv[4]
 namespace = sys.argv[5]
+everything = sys.argv[6]
+folder = sys.argv[7]
+
+
+def getAll(directory):
+    theList = []
+    paths = pathlib2.Path(directory)
+    for directories in paths.iterdir():
+        for directory in directories.iterdir():
+            theDirectory = directory.parts[0] + '/' + directory.parts[1] + '/' + directory.parts[2]
+            theList.insert(0, theDirectory)
+
+    return theList
+
+
+def getServicesCLI(data):
+    theList = []
+
+    for line in data.split(' '):
+        path = pathlib2.Path(line)
+        thePath = path.parts[1] + '/' + path.parts[2]
+        theList.insert(0, thePath)
+
+    sortedList = sorted(set(theList))
+    return sortedList
+
+
+def getServicesFolder(data):
+    theList = []
+
+    for line in data:
+        path = pathlib2.Path(line)
+        thePath = path.parts[1] + '/' + path.parts[2]
+        theList.insert(0, thePath)
+
+    sortedList = sorted(set(theList))
+    return sortedList
 
 
 def readYaml(filePath):
@@ -21,18 +58,6 @@ def readYaml(filePath):
 def loadYaml(data, newData):
     with open(data, 'w') as data:
         yaml.safe_dump_all(newData, data)
-
-
-def getServices(data):
-    theList = []
-
-    for line in data.split(' '):
-        thePath = pathlib.Path(line)
-        combinedPath = thePath.parts[1] + '/' + thePath.parts[2]
-        theList.insert(0, combinedPath)
-
-    sortedList = sorted(set(theList))
-    return sortedList
 
 
 def patchDeployment(name, body):
@@ -151,10 +176,14 @@ def updateDeployment(deployment, name):
 
 
 def main():
-    if services == "":
-        print("No services found.")
+    if everything == "True":
+        multiDeployment(getServicesFolder(getAll(folder)))
+    elif everything == "False":
+        multiDeployment(getServicesCLI(services))
+
     else:
-        multiDeployment(getServices(services))
+        print("Nothing to do.")
+
 
 
 if __name__ == "__main__":

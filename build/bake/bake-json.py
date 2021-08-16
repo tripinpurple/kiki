@@ -1,19 +1,33 @@
 import sys
 import json
-import pathlib
+import pathlib2
 
-# Usage: bake-json.py [app] [service/path service/path] [registry] [tag]
+# Usage: bake-json.py [app] [service/path service/path] [registry] [tag] [True/False] [folder]
 
 app = sys.argv[1]
+services = sys.argv[2]
 registry = sys.argv[3]
 tag = sys.argv[4]
+everything = sys.argv[5]
+folder = sys.argv[6]
 
 
-def getServices(data):
+def getAll(directory):
+    theList = []
+    paths = pathlib2.Path(directory)
+    for directories in paths.iterdir():
+        for directory in directories.iterdir():
+            theDirectory = directory.parts[0] + '/' + directory.parts[1] + '/' + directory.parts[2]
+            theList.insert(0, theDirectory)
+
+    return theList
+
+
+def getServicesCLI(data):
     theList = []
 
     for line in data.split(' '):
-        path = pathlib.Path(line)
+        path = pathlib2.Path(line)
         thePath = path.parts[1] + '/' + path.parts[2]
         theList.insert(0, thePath)
 
@@ -21,10 +35,20 @@ def getServices(data):
     return sortedList
 
 
-paths = getServices(sys.argv[2])
+def getServicesFolder(data):
+    theList = []
+
+    for line in data:
+        path = pathlib2.Path(line)
+        thePath = path.parts[1] + '/' + path.parts[2]
+        theList.insert(0, thePath)
+
+    sortedList = sorted(set(theList))
+    return sortedList
 
 
-def bakeJson():
+def bakeJson(paths):
+
     def writeJson(newData, filename='docker-bake.json'):
         with open(filename, 'r+') as file:
             fileData = json.load(file)
@@ -39,7 +63,7 @@ def bakeJson():
 
     for line in paths:
         name = line
-
+        print(name)
         targetDocker = "Dockerfile.build"
         targetName = "/".join(name.strip("/").split('/'))
         targetContext = "/".join(name[0].strip("/").split('/')[5:]) + "/./"
@@ -53,10 +77,12 @@ def bakeJson():
 
 
 def main():
-    if paths == "":
-        print("No services found.")
+    if everything == "True":
+        bakeJson(getServicesFolder(getAll(folder)))
+    elif everything == "False":
+        bakeJson(getServicesCLI(services))
     else:
-        bakeJson()
+        print("Nothing to do.")
 
 if __name__ == "__main__":
     main()
