@@ -37,7 +37,7 @@ def getServices(data):
 def patchService(name, body):
     api = client.AppsV1Api()
 
-    resp = api.patch_namespaced_deployment(
+    servicePatch = api.patch_namespaced_deployment(
         name=name, namespace=namespace, body=body
     )
 
@@ -46,12 +46,25 @@ def patchService(name, body):
     print(
         "%s\t\t%s\t%s\t\t%s\n"
         % (
-            resp.metadata.namespace,
-            resp.metadata.name,
-            resp.metadata.generation,
-            resp.spec.template.spec.containers[0].image,
+            servicePatch.metadata.namespace,
+            servicePatch.metadata.name,
+            servicePatch.metadata.generation,
+            servicePatch.spec.template.spec.containers[0].image,
         )
     )
+
+
+def patchConfig(name, body):
+
+    api = client.CoreV1Api()
+
+    configMapPatch = api.patch_namespaced_config_map(
+        name=name, namespace=namespace, body=body
+    )
+
+    print("\n[INFO] configmap `test-configmap` patched\n")
+    print("NAME:\n%s\n" % configMapPatch.metadata.name)
+    print("DATA:\n%s\n" % configMapPatch.data)
 
 
 def multiDeployment(services):
@@ -61,6 +74,20 @@ def multiDeployment(services):
 
         deploymentPath = "services/" + service + "/" + "kube" + "/" + "base" + "/" + "deployment.yaml"
         cronjobPath = "services/" + service + "/" + "kube" + "/" + "base" + "/" + "cronjob.yaml"
+
+        configPathDevelopment = "services/" + service + "/" + "kube" + "/" + "overlays" + "/" + "stage" + "/" + "config.yaml"
+        configPathProduction = "services/" + service + "/" + "kube" + "/" + "overlays" + "/" + "production" + "/" + "config.yaml"
+
+        if namespace == "default":
+            configPath = configPathDevelopment
+        elif namespace == "production":
+            configPath = configPathProduction
+        else:
+            print("Namespace not selected.")
+
+        readIt = readYaml(configPath)
+        configName = readIt[0]['metadata']['name']
+        patchConfig(configName, configPath)
 
         if pathlib.Path(deploymentPath).is_file():
 
