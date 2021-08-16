@@ -19,19 +19,26 @@ Github Actions:
   uses: tj-actions/changed-files@master
   with:
     files: |
-      file.sh or *.sh
-      file.py or *.py
+      services/*/
+   
+- name: List all modified files
+  shell: bash
+  run: |
+    echo ${{ steps.changed-files.outputs.all_modified_files }}
 ```
 
 ### Categories
-- [builds](https://google.com)
-- [deploys](https://google.com)
+- [builds](build/)
+- [deploys](deploy/)
 
-#### Builds
+#### Builds / docker bake
+[bake-json.py](build/bake/bake-json.py)
+```
+Usage: bake-json.py [app] [service/path service/path] [registry] [tag]
+```
 
-##### go build
-##### docker bake
-
-
-#### Deploys
-##### kubernetes
+#### Deploys / kubernetes
+[kube.py](deploy/kube/kube.py)
+```
+Usage: kube.py [app] [service/path service/path] [registry] [tag] [namespace]
+```

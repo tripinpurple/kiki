@@ -65,9 +65,7 @@ def multiDeployment(services):
         if pathlib.Path(deploymentPath).is_file():
 
             filePath = deploymentPath
-
             readIt = readYaml(filePath)
-
             image = registry + '/' + app + '/' + service + ':' + tag
 
             readIt[1]['spec']['template']['spec']['containers'][0]['image'] = image
@@ -82,9 +80,7 @@ def multiDeployment(services):
         elif pathlib.Path(cronjobPath).is_file():
 
             filePath = cronjobPath
-
             readIt = readYaml(filePath)
-
             image = registry + '/' + app + '/' + service + ':' + tag
 
             readIt[0]['spec']['jobTemplate']['spec']['template']['spec']['containers'][0]['image'] = image
