@@ -8,6 +8,7 @@ app = sys.argv[1]
 registry = sys.argv[3]
 tag = sys.argv[4]
 
+
 def getServices(data):
     theList = []
 
@@ -19,10 +20,11 @@ def getServices(data):
     sortedList = sorted(set(theList))
     return sortedList
 
+
 paths = getServices(sys.argv[2])
 
-def bakeJson():
 
+def bakeJson():
     def writeJson(newData, filename='docker-bake.json'):
         with open(filename, 'r+') as file:
             fileData = json.load(file)
@@ -51,7 +53,6 @@ def bakeJson():
 
 
 def main():
-
     bakeJson()
 
 
