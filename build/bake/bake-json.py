@@ -62,14 +62,11 @@ def bakeJson(paths):
         json.dump(entry, feedsJson)
 
     for line in paths:
-        name = line
-        print(name)
         targetDocker = "Dockerfile.build"
-        targetName = "/".join(name.strip("/").split('/'))
-        targetContext = "/".join(name[0].strip("/").split('/')[5:]) + "/./"
-        targetEcr = str(registry) + "/" + app + "/" + targetName + ":" + tag
+        targetContext = "services" + "/" + line + "/./"
+        targetEcr = str(registry) + "/" + app + "/" + line + ":" + tag
 
-        renamedPath = targetName.replace('/', '-')
+        renamedPath = line.replace('/', '-')
 
         jsonString = {renamedPath: {"context": targetContext, "dockerfile": targetDocker, "tags": [targetEcr]}}
 
