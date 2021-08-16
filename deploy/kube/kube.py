@@ -100,16 +100,16 @@ def patchCronjob(name, body):
     )
 
 
-def patchConfig(name, body):
-    api = client.CoreV1Api()
-
-    patch = api.patch_namespaced_config_map(
-        name=name, namespace=namespace, body=body
-    )
-
-    print("\n[INFO] configmap '"+name+"' patched\n")
-    print("NAME:\n%s\n" % patch.metadata.name)
-    print("DATA:\n%s\n" % patch.data)
+#def patchConfig(name, body):
+#    api = client.CoreV1Api()
+#
+#    patch = api.patch_namespaced_config_map(
+#        name=name, namespace=namespace, body=body
+#    )
+#
+#    print("\n[INFO] configmap '"+name+"' patched\n")
+#    print("NAME:\n%s\n" % patch.metadata.name)
+#    print("DATA:\n%s\n" % patch.data)
 
 
 def multiDeployment(theServices):
@@ -120,19 +120,19 @@ def multiDeployment(theServices):
         deploymentPath = "services/" + service + "/" + "kube" + "/" + "base" + "/" + "deployment.yaml"
         cronjobPath = "services/" + service + "/" + "kube" + "/" + "base" + "/" + "cronjob.yaml"
 
-        configPathDevelopment = "services/" + service + "/" + "kube" + "/" + "overlays" + "/" + "stage" + "/" + "config.yaml"
-        configPathProduction = "services/" + service + "/" + "kube" + "/" + "overlays" + "/" + "production" + "/" + "config.yaml"
+#        configPathDevelopment = "services/" + service + "/" + "kube" + "/" + "overlays" + "/" + "stage" + "/" + "config.yaml"
+#        configPathProduction = "services/" + service + "/" + "kube" + "/" + "overlays" + "/" + "production" + "/" + "config.yaml"
 
-        if namespace == "default":
-            configPath = configPathDevelopment
-        elif namespace == "production":
-            configPath = configPathProduction
-        else:
-            print("Namespace not selected.")
+#        if namespace == "default":
+#            configPath = configPathDevelopment
+#        elif namespace == "production":
+#            configPath = configPathProduction
+#        else:
+#            print("Namespace not selected.")
 
-        readIt = readYaml(configPath)
-        configName = readIt[0]['metadata']['name']
-        patchConfig(configName, readIt)
+#        readIt = readYaml(configPath)
+#        configName = readIt[0]['metadata']['name']
+#        patchConfig(configName, readIt)
 
         if pathlib2.Path(deploymentPath).is_file():
 
