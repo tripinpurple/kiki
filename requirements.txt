@@ -1,0 +1,4 @@
+kubernetes
+yaml
+json
+pathlib
