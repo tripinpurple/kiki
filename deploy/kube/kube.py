@@ -134,7 +134,7 @@ def multiDeployment(services):
         configName = readIt[0]['metadata']['name']
         patchConfig(configName, configPath)
 
-        if pathlib.Path(deploymentPath).is_file():
+        if pathlib2.Path(deploymentPath).is_file():
 
             filePath = deploymentPath
             readIt = readYaml(filePath)
@@ -149,7 +149,7 @@ def multiDeployment(services):
             updateDeployment(filePath, serviceName)
 
 
-        elif pathlib.Path(cronjobPath).is_file():
+        elif pathlib2.Path(cronjobPath).is_file():
 
             filePath = cronjobPath
             readIt = readYaml(filePath)
