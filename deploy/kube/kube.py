@@ -6,6 +6,7 @@ from kubernetes import client, config
 # Usage: kube.py [app] [service/path service/path] [registry] [tag] [namespace]
 
 app = sys.argv[1]
+services = sys.argv[2]
 registry = sys.argv[3]
 tag = sys.argv[4]
 namespace = sys.argv[5]
@@ -150,7 +151,10 @@ def updateDeployment(deployment, name):
 
 
 def main():
-    multiDeployment(getServices(sys.argv[2]))
+    if services == "":
+        print("No services found.")
+    else:
+        multiDeployment(getServices(services))
 
 
 if __name__ == "__main__":

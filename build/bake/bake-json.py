@@ -53,8 +53,10 @@ def bakeJson():
 
 
 def main():
-    bakeJson()
-
+    if paths == "":
+        print("No services found.")
+    else:
+        bakeJson()
 
 if __name__ == "__main__":
     main()
