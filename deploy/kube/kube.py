@@ -64,7 +64,7 @@ def patchDeployment(name, body):
     api = client.AppsV1Api()
 
     patch = api.patch_namespaced_deployment(
-        name=name, namespace=namespace, body=body, pretty=True
+        name=name, namespace=namespace, body=body
     )
 
     print("\n[INFO] '"+name+"' container image updated.\n")
@@ -84,7 +84,7 @@ def patchCronjob(name, body):
     api = client.BatchV1beta1Api()
 
     patch = api.patch_namespaced_cron_job(
-        name=name, namespace=namespace, body=body, pretty=True
+        name=name, namespace=namespace, body=body
     )
 
     print("\n[INFO] '"+name+"' container image updated.\n")
@@ -104,7 +104,7 @@ def patchConfig(name, body):
     api = client.CoreV1Api()
 
     patch = api.patch_namespaced_config_map(
-        name=name, namespace=namespace, body=body, pretty=True
+        name=name, namespace=namespace, body=body
     )
 
     print("\n[INFO] configmap '"+name+"' patched\n")
