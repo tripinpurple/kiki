@@ -34,11 +34,11 @@ def getServices(data):
     return sortedList
 
 
-def patchService(name, body):
+def patchDeployment(name, body):
     api = client.AppsV1Api()
 
-    servicePatch = api.patch_namespaced_deployment(
-        name=name, namespace=namespace, body=body
+    patch = api.patch_namespaced_deployment(
+        name=name, namespace=namespace, body=body, pretty=True
     )
 
     print("\n[INFO] '"+name+"' container image updated.\n")
@@ -46,10 +46,30 @@ def patchService(name, body):
     print(
         "%s\t\t%s\t%s\t\t%s\n"
         % (
-            servicePatch.metadata.namespace,
-            servicePatch.metadata.name,
-            servicePatch.metadata.generation,
-            servicePatch.spec.template.spec.containers[0].image,
+            patch.metadata.namespace,
+            patch.metadata.name,
+            patch.metadata.generation,
+            patch.spec.template.spec.containers[0].image,
+        )
+    )
+
+
+def patchCronjob(name, body):
+    api = client.BatchV1beta1Api()
+
+    patch = api.patch_namespaced_cron_job(
+        name=name, namespace=namespace, body=body, pretty=True
+    )
+
+    print("\n[INFO] '"+name+"' container image updated.\n")
+    print("%s\t%s\t\t\t%s\t%s" % ("NAMESPACE", "NAME", "REVISION", "IMAGE"))
+    print(
+        "%s\t\t%s\t%s\t\t%s\n"
+        % (
+            patch.metadata.namespace,
+            patch.metadata.name,
+            patch.metadata.generation,
+            patch.spec.jobTemplate.spec.template.spec.containers[0].image
         )
     )
 
@@ -57,13 +77,13 @@ def patchService(name, body):
 def patchConfig(name, body):
     api = client.CoreV1Api()
 
-    configMapPatch = api.patch_namespaced_config_map(
-        name=name, namespace=namespace, body=body
+    patch = api.patch_namespaced_config_map(
+        name=name, namespace=namespace, body=body, pretty=True
     )
 
     print("\n[INFO] configmap '"+name+"' patched\n")
-    print("NAME:\n%s\n" % configMapPatch.metadata.name)
-    print("DATA:\n%s\n" % configMapPatch.data)
+    print("NAME:\n%s\n" % patch.metadata.name)
+    print("DATA:\n%s\n" % patch.data)
 
 
 def multiDeployment(services):
@@ -122,11 +142,11 @@ def multiDeployment(services):
 
 
 def updateCronjob(cronjob, name):
-    patchService(name, cronjob)
+    patchCronjob(name, cronjob)
 
 
 def updateDeployment(deployment, name):
-    patchService(name, deployment)
+    patchDeployment(name, deployment)
 
 
 def main():
