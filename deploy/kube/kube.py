@@ -3,7 +3,7 @@ import yaml
 import pathlib2
 from kubernetes import client, config
 
-# Usage: kube.py [app] [service/path service/path] [registry] [tag] [namespace] [True/False] [folder]
+# Usage: kube.py [app] [service/path service/path] [registry] [tag] [namespace] [true/false] [folder]
 
 app = sys.argv[1]
 services = sys.argv[2]
@@ -176,9 +176,9 @@ def updateDeployment(deployment, name):
 
 
 def main():
-    if everything == "True":
+    if everything == "true":
         multiDeployment(getServicesFolder(getAll(folder)))
-    elif everything == "False":
+    elif everything == "false":
         multiDeployment(getServicesCLI(services))
 
     else:

@@ -2,7 +2,7 @@ import sys
 import json
 import pathlib2
 
-# Usage: bake-json.py [app] [service/path service/path] [registry] [tag] [True/False] [folder]
+# Usage: bake-json.py [app] [service/path service/path] [registry] [tag] [true/false] [folder]
 
 app = sys.argv[1]
 services = sys.argv[2]
@@ -77,9 +77,9 @@ def bakeJson(paths):
 
 
 def main():
-    if everything == "True":
+    if everything == "true":
         bakeJson(getServicesFolder(getAll(folder)))
-    elif everything == "False":
+    elif everything == "false":
         bakeJson(getServicesCLI(services))
     else:
         print("Nothing to do.")
