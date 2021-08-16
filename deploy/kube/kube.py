@@ -112,10 +112,10 @@ def patchConfig(name, body):
     print("DATA:\n%s\n" % patch.data)
 
 
-def multiDeployment(services):
+def multiDeployment(theServices):
     config.load_kube_config()
 
-    for service in services:
+    for service in theServices:
 
         deploymentPath = "services/" + service + "/" + "kube" + "/" + "base" + "/" + "deployment.yaml"
         cronjobPath = "services/" + service + "/" + "kube" + "/" + "base" + "/" + "cronjob.yaml"
@@ -132,7 +132,7 @@ def multiDeployment(services):
 
         readIt = readYaml(configPath)
         configName = readIt[0]['metadata']['name']
-        patchConfig(configName, configPath)
+        patchConfig(configName, readIt)
 
         if pathlib2.Path(deploymentPath).is_file():
 
