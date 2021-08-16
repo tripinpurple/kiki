@@ -55,7 +55,6 @@ def patchService(name, body):
 
 
 def patchConfig(name, body):
-
     api = client.CoreV1Api()
 
     configMapPatch = api.patch_namespaced_config_map(
