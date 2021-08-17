@@ -1,2 +1,3 @@
 docker-bake.json
 .idea/*
+.testing/test.py

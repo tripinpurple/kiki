@@ -1,6 +1,7 @@
 import sys
 import yaml
 import pathlib2
+from datetime import datetime
 from kubernetes import client, config
 
 # Usage: kube.py [app] [service/path service/path] [registry] [tag] [namespace] [true/false] [folder]
@@ -12,6 +13,9 @@ tag = sys.argv[4]
 namespace = sys.argv[5]
 everything = sys.argv[6]
 folder = sys.argv[7]
+
+now = datetime.now()
+current_time = now.strftime("%H:%M:%S")
 
 
 def getAll(directory):
@@ -63,53 +67,41 @@ def loadYaml(data, newData):
 def patchDeployment(name, body):
     api = client.AppsV1Api()
 
-    patch = api.patch_namespaced_deployment(
-        name=name, namespace=namespace, body=body
-    )
+    patch = api.patch_namespaced_deployment(name=name, body=body, namespace=namespace)
 
-    print("\n[INFO] '"+name+"' container image updated.\n")
-    print("%s\t%s\t\t\t%s\t%s" % ("NAMESPACE", "NAME", "REVISION", "IMAGE"))
-    print(
-        "%s\t\t%s\t%s\t\t%s\n"
-        % (
-            patch.metadata.namespace,
-            patch.metadata.name,
-            patch.metadata.generation,
-            patch.spec.template.spec.containers[0].image,
-        )
-    )
+    print("[✓] '"+name+"' applied: deployment image ['"+patch.spec.template.spec.containers[0].image+"']")
 
 
 def patchCronjob(name, body):
     api = client.BatchV1beta1Api()
 
-    patch = api.patch_namespaced_cron_job(
-        name=name, namespace=namespace, body=body
-    )
+    patch = api.patch_namespaced_cron_job(name=name, body=body, namespace=namespace)
 
-    print("\n[INFO] '"+name+"' container image updated.\n")
-    print("%s\t%s\t\t\t%s\t%s" % ("NAMESPACE", "NAME", "REVISION", "IMAGE"))
-    print(
-        "%s\t\t%s\t%s\t\t%s\n"
-        % (
-            patch.metadata.namespace,
-            patch.metadata.name,
-            patch.metadata.generation,
-            patch.spec.jobTemplate.spec.template.spec.containers[0].image
-        )
-    )
+    print("[✓] '"+name+"' applied: cronJob")
 
 
-#def patchConfig(name, body):
-#    api = client.CoreV1Api()
-#
-#    patch = api.patch_namespaced_config_map(
-#        name=name, namespace=namespace, body=body
-#    )
-#
-#    print("\n[INFO] configmap '"+name+"' patched\n")
-#    print("NAME:\n%s\n" % patch.metadata.name)
-#    print("DATA:\n%s\n" % patch.data)
+def patchService(name, body):
+    api = client.CoreV1Api()
+
+    api.patch_namespaced_service(name=name, body=body, namespace=namespace)
+
+    print("[✓] '"+name+"' applied: service ")
+
+
+def patchConfig(name, body):
+    api = client.CoreV1Api()
+
+    api.patch_namespaced_config_map(name=name, namespace=namespace, body=body)
+
+    print("[✓] '"+name+"' applied: config ")
+
+
+def patchSecret(name, body):
+    api = client.CoreV1Api()
+
+    api.patch_namespaced_secret(name=name, body=body, namespace=namespace)
+
+    print("[✓] '"+name+"' applied: secret ")
 
 
 def multiDeployment(theServices):
@@ -120,59 +112,59 @@ def multiDeployment(theServices):
         deploymentPath = "services/" + service + "/" + "kube" + "/" + "base" + "/" + "deployment.yaml"
         cronjobPath = "services/" + service + "/" + "kube" + "/" + "base" + "/" + "cronjob.yaml"
 
-#        configPathDevelopment = "services/" + service + "/" + "kube" + "/" + "overlays" + "/" + "stage" + "/" + "config.yaml"
-#        configPathProduction = "services/" + service + "/" + "kube" + "/" + "overlays" + "/" + "production" + "/" + "config.yaml"
+        configPathDevelopment = "services/" + service + "/" + "kube" + "/" + "overlays" + "/" + "stage" + "/" + "config.yaml"
+        configPathProduction = "services/" + service + "/" + "kube" + "/" + "overlays" + "/" + "production" + "/" + "config.yaml"
 
-#        if namespace == "default":
-#            configPath = configPathDevelopment
-#        elif namespace == "production":
-#            configPath = configPathProduction
-#        else:
-#            print("Namespace not selected.")
+        if namespace == "default":
+            configPath = configPathDevelopment
+        elif namespace == "production":
+            configPath = configPathProduction
+        else:
+            print("Namespace not selected.")
 
-#        readIt = readYaml(configPath)
-#        configName = readIt[0]['metadata']['name']
-#        patchConfig(configName, readIt)
+        readIt = readYaml(configPath)
+
+        configName = readIt[0]['metadata']['name']
+        patchConfig(configName, readIt[0])
+
+        secretName = readIt[1]['metadata']['name']
+        patchSecret(secretName, readIt[1])
 
         if pathlib2.Path(deploymentPath).is_file():
 
-            filePath = deploymentPath
-            readIt = readYaml(filePath)
+            readIt = readYaml(deploymentPath)
+
+            serviceName = readIt[1]['metadata']['name']
+
+            patchService(serviceName, readIt[0])
+
             image = registry + '/' + app + '/' + service + ':' + tag
 
             readIt[1]['spec']['template']['spec']['containers'][0]['image'] = image
 
             loadYaml(deploymentPath, readIt)
 
-            serviceName = readIt[1]['metadata']['name']
+            deploymentName = readIt[1]['metadata']['name']
 
-            updateDeployment(filePath, serviceName)
+            patchDeployment(deploymentName, readIt[1])
 
 
         elif pathlib2.Path(cronjobPath).is_file():
 
-            filePath = cronjobPath
-            readIt = readYaml(filePath)
+            readIt = readYaml(cronjobPath)
             image = registry + '/' + app + '/' + service + ':' + tag
 
             readIt[0]['spec']['jobTemplate']['spec']['template']['spec']['containers'][0]['image'] = image
 
             loadYaml(cronjobPath, readIt)
 
-            serviceName = readIt[0]['metadata']['name']
+            cronjobName = readIt[0]['metadata']['name']
 
-            updateCronjob(filePath, serviceName)
+            patchCronjob(cronjobName, readIt[0])
+
 
         else:
             print('Files do not exist.')
-
-
-def updateCronjob(cronjob, name):
-    patchCronjob(name, cronjob)
-
-
-def updateDeployment(deployment, name):
-    patchDeployment(name, deployment)
 
 
 def main():
@@ -183,7 +175,6 @@ def main():
 
     else:
         print("Nothing to do.")
-
 
 
 if __name__ == "__main__":
