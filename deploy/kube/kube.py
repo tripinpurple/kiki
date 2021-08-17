@@ -3,6 +3,7 @@ import yaml
 import pathlib2
 from datetime import datetime
 from kubernetes import client, config
+from kubernetes.client.rest import ApiException
 
 # Usage: kube.py [app] [service/path service/path] [registry] [tag] [namespace] [true/false] [folder]
 
@@ -75,7 +76,7 @@ def patchDeployment(name, body):
 def patchCronjob(name, body):
     api = client.BatchV1beta1Api()
 
-    patch = api.patch_namespaced_cron_job(name=name, body=body, namespace=namespace)
+    api.patch_namespaced_cron_job(name=name, body=body, namespace=namespace)
 
     print("[✓] '"+name+"' applied: cronJob")
 
@@ -104,6 +105,22 @@ def patchSecret(name, body):
     print("[✓] '"+name+"' applied: secret ")
 
 
+def createConfig(name, body):
+    api = client.CoreV1Api()
+
+    api.create_namespaced_config_map(body=body, namespace=namespace)
+
+    print("[✓] '"+name+"' created: config ")
+
+
+def createSecret(name, body):
+    api = client.CoreV1Api()
+
+    api.create_namespaced_secret(body=body, namespace=namespace)
+
+    print("[✓] '"+name+"' created: secret ")
+
+
 def multiDeployment(theServices):
     config.load_kube_config()
 
@@ -120,15 +137,50 @@ def multiDeployment(theServices):
         elif namespace == "production":
             configPath = configPathProduction
         else:
-            print("Namespace not selected.")
+            print("Namespace not selected!")
 
         readIt = readYaml(configPath)
 
-        configName = readIt[0]['metadata']['name']
-        patchConfig(configName, readIt[0])
+        try:
+            var = readIt[1]
+            try:
+                configName = readIt[0]['metadata']['name']
+                secretName = readIt[1]['metadata']['name']
+                patchConfig(configName, readIt[0])
+                patchSecret(secretName, readIt[1])
+            except ApiException as e:
+                if e.reason == "Not Found":
+                    configName = readIt[0]['metadata']['name']
+                    secretName = readIt[1]['metadata']['name']
+                    createConfig(configName, readIt[0])
+                    createSecret(secretName, readIt[1])
+                else:
+                    print("Exception Raised!")
+        except IndexError:
+            if readIt[0]["kind"] == "ConfigMap":
+                try:
+                    configName = readIt[0]['metadata']['name']
+                    patchConfig(configName, readIt[0])
+                except ApiException as e:
+                    if e.status == "Not Found":
+                        configName = readIt[0]['metadata']['name']
+                        createConfig(configName, readIt[0])
+                    else:
+                        print("Exception Raised!")
 
-        secretName = readIt[1]['metadata']['name']
-        patchSecret(secretName, readIt[1])
+            elif readIt[0]["kind"] == "Secret":
+                try:
+                    secretName = readIt[0]['metadata']['name']
+                    patchSecret(secretName, readIt[0])
+                except ApiException as e:
+                    if e.status == "Not Found":
+                        secretName = readIt[0]['metadata']['name']
+                        createSecret(secretName, readIt[0])
+                    else:
+                        print("Exception Raised!")
+            else:
+                print("Did not find Kind!")
+
 
         if pathlib2.Path(deploymentPath).is_file():
 
