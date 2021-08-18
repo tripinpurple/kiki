@@ -216,15 +216,17 @@ def multiDeployment(theServices):
 
 
         else:
-            print('Files do not exist.')
+            print('Files do not exist!')
 
 
 def main():
     if everything == "true":
         multiDeployment(getServicesFolder(getAll(folder)))
     elif everything == "false":
-        multiDeployment(getServicesCLI(services))
-
+        if services == "":
+            print("Nothing to deploy!")
+        else:
+            multiDeployment(getServicesCLI(services))
     else:
         print("Nothing to do.")
 
