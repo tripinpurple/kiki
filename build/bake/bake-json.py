@@ -77,7 +77,10 @@ def main():
     if everything == "true":
         bakeJson(getServicesFolder(getAll(folder)))
     elif everything == "false":
-        bakeJson(getServicesCLI(services))
+        if services == "":
+            print("No services to bake.")
+        else:
+            bakeJson(getServicesCLI(services))
     else:
         print("Nothing to do.")
 
