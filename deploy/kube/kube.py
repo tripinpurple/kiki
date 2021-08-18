@@ -1,7 +1,6 @@
 import sys
 import yaml
 import pathlib2
-from datetime import datetime
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 
@@ -14,10 +13,6 @@ tag = sys.argv[4]
 namespace = sys.argv[5]
 everything = sys.argv[6]
 folder = sys.argv[7]
-
-now = datetime.now()
-current_time = now.strftime("%H:%M:%S")
-
 
 def getAll(directory):
     theList = []
