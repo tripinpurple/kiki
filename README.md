@@ -31,14 +31,20 @@ Github Actions:
 - [builds](build/)
 - [deploys](deploy/)
 
-#### Builds / docker bake
-[bake-json.py](build/bake/bake-json.py)
+#### Builds
+Docker Bake: [bake-json.py](build/bake/bake-json.py)
 ```
-Usage: bake-json.py [app] [service/path service/path] [registry] [tag]
+Usage: bake-json.py [app] [service/path service/path] [registry] [tag] [true/false] [folder]
+```
+
+
+Go Build: [go.py](build/go/go.py)
+```
+Usage: go.py [service/path] [true/false] [folder]
 ```
 
 #### Deploys / kubernetes
-[kube.py](deploy/kube/kube.py)
+Kubernetes Deploy: [kube.py](deploy/kube/kube.py)
 ```
-Usage: kube.py [app] [service/path service/path] [registry] [tag] [namespace]
+Usage: kube.py [app] [service/path service/path] [registry] [tag] [namespace] [true/false] [folder]
 ```
