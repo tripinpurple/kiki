@@ -43,7 +43,7 @@ Go Build: [go.py](build/go/go.py)
 Usage: go.py [service/path] [true/false] [folder]
 ```
 
-#### Deploys / kubernetes
+#### Deploys
 Kubernetes Deploy: [kube.py](deploy/kube/kube.py)
 ```
 Usage: kube.py [app] [service/path service/path] [registry] [tag] [namespace] [true/false] [folder]
