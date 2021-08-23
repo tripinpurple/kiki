@@ -122,11 +122,11 @@ def multiDeployment(theServices):
 
     for service in theServices:
 
-        deploymentPath = "services/" + service + "/" + "kube" + "/" + "base" + "/" + "deployment.yaml"
-        cronjobPath = "services/" + service + "/" + "kube" + "/" + "base" + "/" + "cronjob.yaml"
+        deploymentPath = "services/" + service + "/kube/base/deployment.yaml"
+        cronjobPath = "services/" + service + "/kube/base/cronjob.yaml"
 
-        configPathDevelopment = "services/" + service + "/" + "kube" + "/" + "overlays" + "/" + "stage" + "/" + "config.yaml"
-        configPathProduction = "services/" + service + "/" + "kube" + "/" + "overlays" + "/" + "production" + "/" + "config.yaml"
+        configPathDevelopment = "services/" + service + "/kube/overlays/stage/config.yaml"
+        configPathProduction = "services/" + service + "/kube/overlays/production/config.yaml"
 
         if namespace == "default":
             configPath = configPathDevelopment
