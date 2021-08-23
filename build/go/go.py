@@ -52,10 +52,11 @@ def getServicesFolder(data):
 def goBuild(theServices):
     for service in theServices:
         print(service)
+        theEnv = os.environ.copy()
         tidyCommand = 'go mod tidy'
         buildCommand = 'go build -ldflags "-X main.appversion='+currentTime+'" -o '+str(currentDirectory)+'/services/'+service+'/app .'
-        subprocess.call(tidyCommand, cwd="services/" + service, shell=True, env={'GOCACHE': os.environ['GOCACHE'], 'GOOS': os.environ['GOOS'], 'GOARCH': os.environ['GOARCH'], 'GOSUMDB': os.environ['GOSUMDB'], 'GOPRIVATE': os.environ['GOPRIVATE']})
-        subprocess.call(buildCommand, cwd="services/" + service, shell=True, env={'GOCACHE': os.environ['GOCACHE'], 'GOOS': os.environ['GOOS'], 'GOARCH': os.environ['GOARCH'], 'GOSUMDB': os.environ['GOSUMDB'], 'GOPRIVATE': os.environ['GOPRIVATE']})
+        subprocess.call(tidyCommand, cwd="services/" + service, shell=True, env=theEnv)
+        subprocess.call(buildCommand, cwd="services/" + service, shell=True, env=theEnv)
 
 
 def main():
