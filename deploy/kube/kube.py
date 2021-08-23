@@ -14,6 +14,7 @@ namespace = sys.argv[5]
 everything = sys.argv[6]
 folder = sys.argv[7]
 
+
 def getAll(directory):
     theList = []
     paths = pathlib2.Path(directory)
