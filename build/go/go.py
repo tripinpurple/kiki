@@ -54,8 +54,8 @@ def goBuild(theServices):
         print(service)
         tidyCommand = 'go mod tidy'
         buildCommand = 'go build -ldflags "-X main.appversion='+currentTime+'" -o '+str(currentDirectory)+'/services/'+service+'/app .'
-        subprocess.call(tidyCommand, cwd="services/" + service, shell=True, env={'GOOS': os.environ['GOOS'], 'GOARCH': os.environ['GOARCH'], 'GOSUMDB': os.environ['GOSUMDB'], 'GOPRIVATE': os.environ['GOPRIVATE']})
-        subprocess.call(buildCommand, cwd="services/" + service, shell=True, env={'GOOS': os.environ['GOOS'], 'GOARCH': os.environ['GOARCH'], 'GOSUMDB': os.environ['GOSUMDB'], 'GOPRIVATE': os.environ['GOPRIVATE']})
+        subprocess.call(tidyCommand, cwd="services/" + service, shell=True, env={'GOCACHE': os.environ['GOCACHE'], 'GOOS': os.environ['GOOS'], 'GOARCH': os.environ['GOARCH'], 'GOSUMDB': os.environ['GOSUMDB'], 'GOPRIVATE': os.environ['GOPRIVATE']})
+        subprocess.call(buildCommand, cwd="services/" + service, shell=True, env={'GOCACHE': os.environ['GOCACHE'], 'GOOS': os.environ['GOOS'], 'GOARCH': os.environ['GOARCH'], 'GOSUMDB': os.environ['GOSUMDB'], 'GOPRIVATE': os.environ['GOPRIVATE']})
 
 
 def main():
