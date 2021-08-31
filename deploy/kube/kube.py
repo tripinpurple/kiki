@@ -122,11 +122,46 @@ def multiDeployment(theServices):
 
     for service in theServices:
 
-        deploymentPath = "services/" + service + "/" + "kube" + "/" + "base" + "/" + "deployment.yaml"
-        cronjobPath = "services/" + service + "/" + "kube" + "/" + "base" + "/" + "cronjob.yaml"
+        deploymentPath = "services/" + service + "/kube/base/deployment.yaml"
+        cronjobPath = "services/" + service + "/kube/base/cronjob.yaml"
 
-        configPathDevelopment = "services/" + service + "/" + "kube" + "/" + "overlays" + "/" + "stage" + "/" + "config.yaml"
-        configPathProduction = "services/" + service + "/" + "kube" + "/" + "overlays" + "/" + "production" + "/" + "config.yaml"
+        configPathDevelopment = "services/" + service + "/kube/overlays/stage/config.yaml"
+        configPathProduction = "services/" + service + "/kube/overlays/production/config.yaml"
+
+        if pathlib2.Path(deploymentPath).is_file():
+
+            readIt = readYaml(deploymentPath)
+
+            serviceName = readIt[1]['metadata']['name']
+
+            patchService(serviceName, readIt[0])
+
+            image = registry + '/' + app + '/' + service + ':' + tag
+
+            readIt[1]['spec']['template']['spec']['containers'][0]['image'] = image
+
+            loadYaml(deploymentPath, readIt)
+
+            deploymentName = readIt[1]['metadata']['name']
+
+            patchDeployment(deploymentName, readIt[1])
+
+
+        elif pathlib2.Path(cronjobPath).is_file():
+
+            readIt = readYaml(cronjobPath)
+            image = registry + '/' + app + '/' + service + ':' + tag
+
+            readIt[0]['spec']['jobTemplate']['spec']['template']['spec']['containers'][0]['image'] = image
+
+            loadYaml(cronjobPath, readIt)
+
+            cronjobName = readIt[0]['metadata']['name']
+
+            patchCronjob(cronjobName, readIt[0])
+
+        else:
+            print('Files do not exist!')
 
         if namespace == "default":
             configPath = configPathDevelopment
@@ -176,43 +211,6 @@ def multiDeployment(theServices):
                         print("Exception Raised!")
             else:
                 print("Did not find Kind!")
-
-
-        if pathlib2.Path(deploymentPath).is_file():
-
-            readIt = readYaml(deploymentPath)
-
-            serviceName = readIt[1]['metadata']['name']
-
-            patchService(serviceName, readIt[0])
-
-            image = registry + '/' + app + '/' + service + ':' + tag
-
-            readIt[1]['spec']['template']['spec']['containers'][0]['image'] = image
-
-            loadYaml(deploymentPath, readIt)
-
-            deploymentName = readIt[1]['metadata']['name']
-
-            patchDeployment(deploymentName, readIt[1])
-
-
-        elif pathlib2.Path(cronjobPath).is_file():
-
-            readIt = readYaml(cronjobPath)
-            image = registry + '/' + app + '/' + service + ':' + tag
-
-            readIt[0]['spec']['jobTemplate']['spec']['template']['spec']['containers'][0]['image'] = image
-
-            loadYaml(cronjobPath, readIt)
-
-            cronjobName = readIt[0]['metadata']['name']
-
-            patchCronjob(cronjobName, readIt[0])
-
-
-        else:
-            print('Files do not exist!')
 
 
 def main():

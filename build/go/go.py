@@ -4,6 +4,8 @@ import pathlib2
 import subprocess
 from datetime import datetime
 
+# Usage: go.py [service/path] [true/false] [folder]
+
 services = sys.argv[1]
 everything = sys.argv[2]
 folder = sys.argv[3]
