@@ -2,3 +2,4 @@ kubernetes~=17.17.0
 PyYAML~=5.4.1
 pathlib2~=2.3.6
 boto3~=1.18.32
+botocore~=1.21.32

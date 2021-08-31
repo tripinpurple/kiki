@@ -132,10 +132,6 @@ def multiDeployment(theServices):
 
             readIt = readYaml(deploymentPath)
 
-            serviceName = readIt[1]['metadata']['name']
-
-            patchService(serviceName, readIt[0])
-
             image = registry + '/' + app + '/' + service + ':' + tag
 
             readIt[1]['spec']['template']['spec']['containers'][0]['image'] = image
@@ -146,10 +142,15 @@ def multiDeployment(theServices):
 
             patchDeployment(deploymentName, readIt[1])
 
+            serviceName = readIt[1]['metadata']['name']
+
+            patchService(serviceName, readIt[0])
+
 
         elif pathlib2.Path(cronjobPath).is_file():
 
             readIt = readYaml(cronjobPath)
+
             image = registry + '/' + app + '/' + service + ':' + tag
 
             readIt[0]['spec']['jobTemplate']['spec']['template']['spec']['containers'][0]['image'] = image
